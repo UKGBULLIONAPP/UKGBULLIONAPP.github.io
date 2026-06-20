@@ -91,7 +91,6 @@
         .add-to-cart-modal { width: 100%; background: linear-gradient(90deg, var(--gold), #f0d080); color: #111; padding: 18px; border-radius: 50px; font-weight: 700; font-size: 18px; margin-top: 10px; }
         .close-modal { position: absolute; top: 16px; right: 20px; font-size: 32px; color: var(--silver); cursor: pointer; }
 
-        /* Enhanced Checkout */
         .checkout-modal .modal-content { max-width: 480px; }
         .cart-items { max-height: 320px; overflow-y: auto; margin-bottom: 20px; }
         .cart-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #333; }
@@ -189,7 +188,7 @@
         </div>
     </div>
 
-    <!-- Enhanced Checkout Modal -->
+    <!-- Checkout Modal -->
     <div class="modal checkout-modal" id="checkout-modal">
         <div class="modal-content">
             <div class="close-modal" onclick="closeCheckout()">×</div>
@@ -245,11 +244,36 @@
         let cart = [];
 
         const products = [
-            { name: "1 oz Gold Britannia", oz: 1, img: "https://picsum.photos/id/201/800/600", desc: "Official Royal Mint UK bullion coin. .9999 fine gold. CGT exempt." },
-            { name: "1 oz Silver Britannia", oz: 1, img: "https://picsum.photos/id/870/800/600", desc: "Official UK silver bullion coin. .999 fine silver." },
-            { name: "5g Gold PAMP Suisse", oz: 0.16075, img: "https://picsum.photos/id/866/800/600", desc: "Lady Fortuna 5g gold bar. .9999 fine. Iconic Swiss mint." },
-            { name: "10 oz Silver Bar", oz: 10, img: "https://picsum.photos/id/870/800/600", desc: "Popular large format silver investment bar." },
-            { name: "1 oz Gold Maple Leaf", oz: 1, img: "https://picsum.photos/id/201/800/600", desc: "Canadian gold coin with security features." }
+            { 
+                name: "1 oz Gold Britannia", 
+                oz: 1, 
+                img: "https://picsum.photos/id/201/800/600", 
+                desc: "Official Royal Mint UK bullion coin. .9999 fine gold. CGT exempt." 
+            },
+            { 
+                name: "1 oz Silver Britannia", 
+                oz: 1, 
+                img: "https://picsum.photos/id/870/800/600", 
+                desc: "Official UK silver bullion coin. .999 fine silver." 
+            },
+            { 
+                name: "5g Gold PAMP Suisse", 
+                oz: 0.16075, 
+                img: "IMG_1053.jpeg", 
+                desc: "Lady Fortuna design. .9999 fine gold. Iconic Swiss PAMP mint." 
+            },
+            { 
+                name: "0.5g Gold Harry Potter Bar", 
+                oz: 0.016075, 
+                img: "IMG_0011.jpeg", 
+                desc: "Limited edition Harry Potter themed gold bar." 
+            },
+            { 
+                name: "5g Gold Buddha Bar", 
+                oz: 0.16075, 
+                img: "IMG_0007.jpeg", 
+                desc: "Beautiful Buddha design gold bar. .9999 fine." 
+            }
         ];
 
         function renderProducts(filtered = products) {
@@ -259,14 +283,15 @@
                 const unitPrice = (prod.oz * (prod.name.includes('Gold') ? GOLD_OZ : SILVER_OZ)).toFixed(2);
                 const box = document.createElement('div');
                 box.className = 'product-box';
-                box.innerHTML = `<img src="${prod.img}" alt="${prod.name}"><div class="info"><div class="title">${prod.name}</div><div class="price">£${unitPrice}</div><div class="oz">${prod.oz.toFixed(2)} oz</div></div>`;
+                box.innerHTML = `<img src="${prod.img}" alt="${prod.name}"><div class="info"><div class="title">${prod.name}</div><div class="price">£${unitPrice}</div><div class="oz">${prod.oz.toFixed(3)} oz</div></div>`;
                 box.onclick = () => openProductModal(prod);
                 grid.appendChild(box);
             });
         }
 
         function openProductModal(prod) {
-            currentProduct = prod; modalQty = 1;
+            currentProduct = prod;
+            modalQty = 1;
             document.getElementById('modal-image').src = prod.img;
             document.getElementById('modal-title').textContent = prod.name;
             document.getElementById('modal-desc').textContent = prod.desc;
