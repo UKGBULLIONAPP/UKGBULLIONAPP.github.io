@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UKG Bullion Boys</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --gold: #d4af37;
+            --silver: #c0c0c0;
+            --dark: #0a0f14;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(10,15,20,0.88), rgba(10,15,20,0.94)), url('https://picsum.photos/id/1015/1920/1200') center/cover fixed;
+            color: #e8e8e8;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        header, .ticker, .search-bar, footer {
+            background: rgba(15,22,30,0.96);
+            backdrop-filter: blur(12px);
+        }
+        header {
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .logo {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, #d4af37, #b8972e);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; box-shadow: 0 4px 15px rgba(212,175,55,0.6);
+        }
+        .app-name {
+            font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;
+            background: linear-gradient(90deg, var(--gold), var(--silver));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .tagline { font-size: 13px; color: var(--silver); }
+
+        .ticker { padding: 10px 16px; text-align: center; font-size: 15px; border-bottom: 1px solid var(--gold); display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .hero { background: linear-gradient(rgba(10,15,20,0.75), rgba(10,15,20,0.88)), url('https://picsum.photos/id/1015/1920/1080') center/cover; padding: 50px 20px 40px; text-align: center; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 36px; background: linear-gradient(90deg, var(--gold), var(--silver)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .trust-badges { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px; font-size: 13px; }
+        .badge { background: rgba(255,255,255,0.08); padding: 6px 14px; border-radius: 30px; border: 1px solid var(--gold); color: var(--silver); }
+
+        .btn { display: block; width: 100%; max-width: 340px; margin: 12px auto; padding: 16px; font-size: 18px; font-weight: 600; border-radius: 50px; text-align: center; cursor: pointer; background: linear-gradient(90deg, var(--gold), #f0d080); color: #111; }
+
+        .search-bar { padding: 16px; }
+        .search-bar input { width: 100%; padding: 14px 20px; border-radius: 50px; border: 1px solid var(--gold); background: rgba(19,33,46,0.9); color: white; font-size: 16px; }
+
+        .products { padding: 20px 16px; }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 26px; text-align: center; margin: 20px 0 16px; background: linear-gradient(90deg, var(--gold), var(--silver)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 16px; }
+        .product-box {
+            background: rgba(19,33,46,0.95); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            cursor: pointer; transition: all 0.3s; border: 1px solid rgba(212,175,55,0.25);
+        }
+        .product-box:hover { transform: scale(1.04); box-shadow: 0 20px 45px rgba(212,175,55,0.35); }
+        .product-box img { width: 100%; height: 160px; object-fit: cover; }
+        .product-box .info { padding: 14px; text-align: center; }
+        .product-box .title { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--gold); }
+        .product-box .price { font-size: 18px; color: var(--silver); font-weight: 700; }
+        .product-box .oz { font-size: 13px; color: #aaa; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content {
+            background: rgba(19,33,46,0.98); border: 1px solid var(--gold); border-radius: 20px; max-width: 460px; width: 100%;
+            padding: 24px; color: #e8e8e8; position: relative; box-shadow: 0 25px 70px rgba(0,0,0,0.8);
+        }
+        .modal-content img { width: 100%; height: 260px; object-fit: cover; border-radius: 12px; margin-bottom: 20px; }
+        .modal-content h2 { font-size: 24px; text-align: center; margin-bottom: 12px; color: var(--gold); }
+        .modal-content .price { font-size: 28px; text-align: center; color: var(--silver); margin: 12px 0; }
+        .modal-content .desc { text-align: center; font-size: 15px; color: #bbb; margin-bottom: 24px; line-height: 1.5; }
+
+        .quantity, .preset-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+        .qty-btn, .preset-btn { background: rgba(212,175,55,0.1); color: var(--gold); border: 1px solid var(--gold); padding: 8px 16px; border-radius: 30px; font-size: 15px; cursor: pointer; }
+        .qty-display { font-size: 28px; font-weight: 700; min-width: 70px; text-align: center; color: var(--silver); }
+        .add-to-cart-modal { width: 100%; background: linear-gradient(90deg, var(--gold), #f0d080); color: #111; padding: 18px; border-radius: 50px; font-weight: 700; font-size: 18px; margin-top: 10px; }
+        .close-modal { position: absolute; top: 16px; right: 20px; font-size: 32px; color: var(--silver); cursor: pointer; }
+
+        /* Enhanced Checkout */
+        .checkout-modal .modal-content { max-width: 480px; }
+        .cart-items { max-height: 320px; overflow-y: auto; margin-bottom: 20px; }
+        .cart-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #333; }
+        .payment-option {
+            display: flex; align-items: center; gap: 16px; background: rgba(19,33,46,0.9); padding: 18px; border-radius: 12px;
+            margin-bottom: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+        }
+        .payment-option:hover { background: rgba(26,37,47,0.98); border-color: var(--gold); }
+        .payment-option span { font-size: 32px; width: 40px; }
+        .payment-option .pay-text { flex: 1; font-weight: 600; color: var(--silver); }
+
+        .why-us { padding: 30px 16px; background: rgba(15,22,30,0.96); }
+        .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .testimonial { background: rgba(19,33,46,0.9); padding: 16px; border-radius: 12px; font-style: italic; color: var(--silver); border-left: 4px solid var(--gold); }
+
+        .cart-float {
+            position: fixed; bottom: 20px; right: 20px; background: linear-gradient(90deg, var(--gold), #f0d080);
+            color: #111; border-radius: 50px; padding: 14px 22px; font-weight: 700; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 40px rgba(212,175,55,0.5); z-index: 1000; cursor: pointer;
+        }
+
+        footer { text-align: center; padding: 30px 20px; font-size: 13px; color: var(--silver); background: rgba(10,15,20,0.98); }
+        .footer-links { display: flex; justify-content: center; gap: 20px; margin: 16px 0; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo">🏛️</div>
+            <div>
+                <div class="app-name">UKG BULLION BOYS</div>
+                <div class="tagline">Premium • Secure • Investment Grade</div>
+            </div>
+        </div>
+        <div class="header-right">👤</div>
+    </header>
+
+    <div class="ticker">
+        <div><strong>Gold:</strong> £3,280/oz <span style="color:#8fbc8f;">+£45 premium</span></div>
+        <div><strong>Silver:</strong> £58/oz <span style="color:#8fbc8f;">+£4 premium</span></div>
+    </div>
+
+    <section class="hero">
+        <h1>Happy Stacking</h1>
+        <p>Investment-grade gold &amp; silver bullion</p>
+        <p class="sub">UK based • LBMA standards • Discreet insured delivery</p>
+        
+        <div class="trust-badges">
+            <div class="badge">🚚 Fully Insured</div>
+            <div class="badge">📦 Discreet Packaging</div>
+            <div class="badge">⭐ 5-Star Reviews</div>
+        </div>
+        
+        <div class="btn btn-primary" onclick="document.getElementById('products-section').scrollIntoView({behavior:'smooth'})">
+            📍 Shop Bullion
+        </div>
+    </section>
+
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="🔍 Search products...">
+    </div>
+
+    <section class="products" id="products-section">
+        <h2 class="section-title">Featured Bullion</h2>
+        <div class="product-grid" id="product-grid"></div>
+    </section>
+
+    <section class="why-us">
+        <h2 class="section-title">Why Stack With Us</h2>
+        <div class="why-grid">
+            <div class="testimonial">"Best prices and super fast discreet delivery." — Mark T.</div>
+            <div class="testimonial">"Love the PAMP bars. Professional service." — Sarah K.</div>
+        </div>
+    </section>
+
+    <!-- Product Modal -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <div class="close-modal" onclick="closeModal()">×</div>
+            <img id="modal-image" src="" alt="">
+            <h2 id="modal-title"></h2>
+            <div class="price" id="modal-price"></div>
+            <div class="desc" id="modal-desc"></div>
+            
+            <div class="preset-btns" id="preset-btns"></div>
+            
+            <div class="quantity">
+                <div class="qty-btn" onclick="changeModalQty(-1)">–</div>
+                <div class="qty-display" id="modal-qty">1</div>
+                <div class="qty-btn" onclick="changeModalQty(1)">+</div>
+            </div>
+            <div style="text-align:center; color:#aaa; font-size:14px; margin-bottom:16px;" id="modal-oz">oz</div>
+            
+            <button class="add-to-cart-modal" onclick="addCurrentToCart()">ADD TO CART</button>
+        </div>
+    </div>
+
+    <!-- Enhanced Checkout Modal -->
+    <div class="modal checkout-modal" id="checkout-modal">
+        <div class="modal-content">
+            <div class="close-modal" onclick="closeCheckout()">×</div>
+            <h2 style="text-align:center; margin-bottom:8px; color:var(--gold);">Secure Checkout</h2>
+            <p style="text-align:center; color:var(--silver); margin-bottom:20px;" id="checkout-total">Total: £0.00</p>
+            
+            <div class="cart-items" id="cart-items-list"></div>
+            
+            <h3 style="margin:20px 0 16px; color:var(--gold); text-align:center;">Choose Payment Method</h3>
+            
+            <div class="payment-option" onclick="selectPayment(this)">
+                <span>💳</span>
+                <div class="pay-text">Credit / Debit Card</div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+                <span>🏦</span>
+                <div class="pay-text">Bank Transfer</div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+                <span>₿</span>
+                <div class="pay-text">Crypto (LTC)</div>
+            </div>
+            <div class="payment-option" onclick="selectPayment(this)">
+                <span>💰</span>
+                <div class="pay-text">PayPal</div>
+            </div>
+
+            <button onclick="completeOrder()" class="add-to-cart-modal" style="margin-top:24px;">COMPLETE SECURE PAYMENT</button>
+        </div>
+    </div>
+
+    <div class="cart-float" onclick="showCheckout()">
+        🛒 <span id="cart-count">0</span> • £<span id="cart-total">0.00</span>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#" style="color:#aaa; text-decoration:none;">About</a>
+            <a href="#" style="color:#aaa; text-decoration:none;">Shipping</a>
+            <a href="#" style="color:#aaa; text-decoration:none;">Privacy</a>
+            <a href="#" style="color:#aaa; text-decoration:none;">Contact</a>
+        </div>
+        © 2026 UKG Bullion Boys • Trusted UK Precious Metals<br>
+        LBMA Standards • Fully Insured • Discreet Service
+    </footer>
+
+    <script>
+        const GOLD_OZ = 3280;
+        const SILVER_OZ = 58;
+
+        let currentProduct = null;
+        let modalQty = 1;
+        let cart = [];
+
+        const products = [
+            { name: "1 oz Gold Britannia", oz: 1, img: "https://picsum.photos/id/201/800/600", desc: "Official Royal Mint UK bullion coin. .9999 fine gold. CGT exempt." },
+            { name: "1 oz Silver Britannia", oz: 1, img: "https://picsum.photos/id/870/800/600", desc: "Official UK silver bullion coin. .999 fine silver." },
+            { name: "5g Gold PAMP Suisse", oz: 0.16075, img: "https://picsum.photos/id/866/800/600", desc: "Lady Fortuna 5g gold bar. .9999 fine. Iconic Swiss mint." },
+            { name: "10 oz Silver Bar", oz: 10, img: "https://picsum.photos/id/870/800/600", desc: "Popular large format silver investment bar." },
+            { name: "1 oz Gold Maple Leaf", oz: 1, img: "https://picsum.photos/id/201/800/600", desc: "Canadian gold coin with security features." }
+        ];
+
+        function renderProducts(filtered = products) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            filtered.forEach(prod => {
+                const unitPrice = (prod.oz * (prod.name.includes('Gold') ? GOLD_OZ : SILVER_OZ)).toFixed(2);
+                const box = document.createElement('div');
+                box.className = 'product-box';
+                box.innerHTML = `<img src="${prod.img}" alt="${prod.name}"><div class="info"><div class="title">${prod.name}</div><div class="price">£${unitPrice}</div><div class="oz">${prod.oz.toFixed(2)} oz</div></div>`;
+                box.onclick = () => openProductModal(prod);
+                grid.appendChild(box);
+            });
+        }
+
+        function openProductModal(prod) {
+            currentProduct = prod; modalQty = 1;
+            document.getElementById('modal-image').src = prod.img;
+            document.getElementById('modal-title').textContent = prod.name;
+            document.getElementById('modal-desc').textContent = prod.desc;
+            updateModalPrice();
+            document.getElementById('modal-oz').textContent = `${prod.oz.toFixed(4)} oz per unit • LBMA approved`;
+            renderPresetButtons();
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function renderPresetButtons() {
+            const container = document.getElementById('preset-btns');
+            container.innerHTML = '';
+            [1,5,10,20].forEach(q => {
+                const btn = document.createElement('div');
+                btn.className = 'preset-btn';
+                btn.textContent = q + " pcs";
+                btn.onclick = () => { modalQty = q; updateModalPrice(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function updateModalPrice() {
+            if (!currentProduct) return;
+            const unitPrice = currentProduct.oz * (currentProduct.name.includes('Gold') ? GOLD_OZ : SILVER_OZ);
+            const total = (modalQty * unitPrice).toFixed(2);
+            document.getElementById('modal-price').innerHTML = `£${total} <span style="font-size:16px;">for ${modalQty} units</span>`;
+            document.getElementById('modal-qty').textContent = modalQty;
+        }
+
+        function changeModalQty(delta) {
+            modalQty = Math.max(1, Math.min(50, modalQty + delta));
+            updateModalPrice();
+        }
+
+        function closeModal() { document.getElementById('product-modal').style.display = 'none'; }
+
+        function addCurrentToCart() {
+            if (!currentProduct) return;
+            const unitPrice = currentProduct.oz * (currentProduct.name.includes('Gold') ? GOLD_OZ : SILVER_OZ);
+            cart.push({ name: currentProduct.name, oz: currentProduct.oz, qty: modalQty, total: modalQty * unitPrice });
+            updateCart();
+            closeModal();
+            alert(`✅ Added ${modalQty} × ${currentProduct.name}`);
+        }
+
+        function updateCart() {
+            let count = cart.reduce((a, c) => a + c.qty, 0);
+            let total = cart.reduce((a, c) => a + c.total, 0);
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('cart-total').textContent = total.toFixed(2);
+        }
+
+        function showCheckout() {
+            if (cart.length === 0) return alert("Cart is empty");
+            let total = cart.reduce((a,c)=>a+c.total,0).toFixed(2);
+            document.getElementById('checkout-total').textContent = `Total: £${total}`;
+
+            let html = '';
+            cart.forEach(item => {
+                html += `<div class="cart-item"><div>${item.qty} × ${item.name}</div><div>£${item.total.toFixed(2)}</div></div>`;
+            });
+            document.getElementById('cart-items-list').innerHTML = html;
+
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckout() { document.getElementById('checkout-modal').style.display = 'none'; }
+
+        function selectPayment(el) {
+            document.querySelectorAll('.payment-option').forEach(o => o.style.borderColor = 'transparent');
+            el.style.borderColor = 'var(--gold)';
+        }
+
+        function completeOrder() {
+            const total = cart.reduce((a,c)=>a+c.total,0).toFixed(2);
+            alert(`✅ Payment of £${total} successful!\n\nYour bullion is being prepared for discreet delivery.\nThank you for stacking with UKG Bullion Boys!`);
+            cart = [];
+            updateCart();
+            closeCheckout();
+        }
+
+        document.getElementById('search').addEventListener('input', e => {
+            const term = e.target.value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        });
+
+        window.onload = () => renderProducts();
+    </script>
+</body>
+</html>
